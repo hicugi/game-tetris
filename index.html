@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Tetris</title>
+		<link rel="stylesheet" href="style.css" />
+	</head>
+	<body>
+		<div class="container">
+			<aside class="sidebar sidebar_left">
+				<div class="block">
+					<h1>Tetris</h1>
+					<h2>Level <strong id="level">1</strong></h2>
+				</div>
+
+				<div class="block">
+					<h2>Statistics</h2>
+					<ul class="stats">
+						<li>
+							<span><i class="shape shape-f"></i></span>
+							<span id="statShapeF">0</span>
+						</li>
+						<li>
+							<span><i class="shape shape-leg"></i></span>
+							<span id="statShapeLeg">0</span>
+						</li>
+						<li>
+							<span><i class="shape shape-z"></i></span>
+							<span id="statShapeZ">0</span>
+						</li>
+						<li>
+							<span><i class="shape shape-square"></i></span>
+							<span id="statShapeSquare">0</span>
+						</li>
+						<li>
+							<span><i class="shape shape-z_r"></i></span>
+							<span id="statShapeZ">0</span>
+						</li>
+						<li>
+							<span><i class="shape shape-leg_r"></i></span>
+							<span id="statShapeLegR">0</span>
+						</li>
+						<li>
+							<span><i class="shape shape-line"></i></span>
+							<span id="statShapeLine">0</span>
+						</li>
+					</ul>
+				</div>
+			</aside>
+
+			<main class="main">
+				<div class="content block">
+					<div id="content" class="content__inner"></div>
+				</div>
+			</main>
+
+			<aside class="sidebar sidebar_left">
+				<div class="next-shape block">
+					<h3>Next</h3>
+					<div id="nextShape" class="next-shape__icon"><i class="shape"></i></div>
+				</div>
+
+				<div class="score block">
+					<h3>Top</h3>
+					<p id="scoreTop">0</p>
+					<hr />
+
+					<h3>Score</h3>
+					<p id="scoreCurrent">0</p>
+				</div>
+
+				<div class="block">
+					<h3>Navigation</h3>
+					<ul class="nav-hint">
+						<li class="nav-hint__item nav-hint__item_left">&#10132;</li>
+						<li class="nav-hint__item nav-hint__item_down">&#10132;</li>
+						<li class="nav-hint__item nav-hint__item_right">&#10132;</li>
+					</ul>
+				</div>
+			</aside>
+		</div>
+	</body>
+</html>
