@@ -297,4 +297,5 @@ h3 {
 	position: relative;
 	width: var(--content-width);
 	height: var(--content-height);
+	overflow: hidden;
 }
