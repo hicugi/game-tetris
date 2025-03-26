@@ -1,5 +1,5 @@
 const BOARD_SIZE = [10, 24];
-const SHAPE_SIZE = 30;
+const SHAPE_SIZE = 32;
 const SHAPE_LIST = [
 	'shape-f', 'shape-f_2', 'shape-f_3', 'shape-f_4',
 	'shape-leg', 'shape-leg_2', 'shape-leg_3', 'shape-leg_4',
@@ -59,10 +59,10 @@ setNextShape();
 function elmMoveShape(elm, t, l) {
 	const { w, h } = elm.shapeData;
 
-	const y = (100 / h) * t;
-	const x = (100 / w) * l;
+	const y = (t * SHAPE_SIZE).toFixed(4);
+	const x = (l * SHAPE_SIZE).toFixed(4);
 
-	elm.style.transform = `translate(${x}%, ${y}%)`;
+	elm.style.transform = `translate(${x}px, ${y}px)`;
 
 	Object.assign(elm.shapeData, { t, l });
 }

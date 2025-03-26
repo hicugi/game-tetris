@@ -1,5 +1,5 @@
 body {
-	--shape-size: 30px;
+	--shape-size: 32px;
 	--shape-f-color: #000;
 	--content-width: calc(var(--shape-size) * 10);
 	--content-height: calc(var(--shape-size) * 24);
@@ -97,7 +97,7 @@ h3 {
 .shape-f_3::before {
 	left: 50%;
 	transform: translateX(-50%);
-	width: 33.3333%;
+	width: var(--shape-size);
 	height: 50%;
 }
 .shape-f_3::before {
@@ -116,7 +116,7 @@ h3 {
 	top: 50%;
 	transform: translateY(-50%);
 	width: 50%;
-	height: 33.3333%;
+	height: var(--shape-size);
 }
 .shape-f_2::before {
 	left: 50%;
@@ -150,7 +150,7 @@ h3 {
 .shape-leg_3::before,
 .shape-leg_r::before,
 .shape-leg_r3::before {
-	width: 33.3333%;
+	width: var(--shape-size);
 	height: 50%;
 }
 .shape-leg_2::before,
@@ -158,7 +158,7 @@ h3 {
 .shape-leg_r2::before,
 .shape-leg_r4::before {
 	width: 50%;
-	height: 33.3333%;
+	height: var(--shape-size);
 }
 
 .shape-leg::after,
@@ -209,14 +209,14 @@ h3 {
 }
 .shape-z::before, .shape-z::after,
 .shape-z_r::before, .shape-z_r::after {
-	width: 66.6666%;
+	width: calc(var(--shape-size) * 2);
 	height: 50%;
 }
 .shape-z_2::before, .shape-z_2::after,
 .shape-z_4::before, .shape-z_4::after,
 .shape-z_r2::before, .shape-z_r2::after {
 	width: 50%;
-	height: 66.6666%;
+	height: calc(var(--shape-size) * 2);
 }
 
 .shape-z::after, .shape-z_2::after,
