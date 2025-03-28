@@ -82,6 +82,13 @@ function elmMoveShape(elm, t, l) {
 	Object.assign(elm.shapeData, { t, l });
 }
 
+function updateStats(name) {
+	const groupName = name.replace(/_\d$/, '');
+	const elm = document.querySelector(`.stats [name='${groupName}']`);
+
+	elm.innerText = Number(elm.innerText) + 1;
+}
+
 let isRotateShapeActive = false;
 function rotateShape(elm) {
 	if (isRotateShapeActive) return;
@@ -131,6 +138,8 @@ function createShape() {
 	};
 
 	elmMoveShape(elm, t, l);
+	
+	updateStats(name);
 
 	elmBoard.appendChild(elm);
 	return elm;
@@ -241,6 +250,8 @@ function moveShape() {
 			}
 		}
 
+		const elmCurrScore = document.querySelector('#scoreCurrent')
+		elmCurrScore.innerText = Number(elmCurrScore.innerText) + rows.length * 10;
 
 		while (rows.length) {
 			const bot = rows.pop();
