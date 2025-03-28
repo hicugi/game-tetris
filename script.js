@@ -45,7 +45,7 @@ const DIRECTIONS = {
 
 const board = Array.from({ length: BOARD_SIZE[1] }, () => new Array(BOARD_SIZE[0]).fill(0));
 
-const elmContent = document.querySelector('#content');
+const elmBoard = document.querySelector('#board');
 let nextShapeIdx = null;
 
 function clearBoard() {
@@ -132,7 +132,7 @@ function createShape() {
 
 	elmMoveShape(elm, t, l);
 
-	elmContent.appendChild(elm);
+	elmBoard.appendChild(elm);
 	return elm;
 }
 
@@ -186,6 +186,28 @@ function actionHandler() {
 		rotateShape(elm);
 	}
 }
+
+(function drawBoard() {
+	for (let i=0; i < board.length; i++) {
+		const elm = document.createElement('DIV');
+		elm.classList.add('board__item');
+		elm.style.top = `${i * SHAPE_SIZE}px`;
+		elmBoard.appendChild(elm);
+	}
+})();
+
+function reDrawBoard() {
+	const size = SHAPE_SIZE;
+	const elms = [...elmBoard.querySelectorAll('.board__item')];
+
+	for (let r=0; r < board.length; r++) {
+		const elm = elms[r];
+
+		const value = board[r].map((v,i) => (v === 1 ? '#000' : 'transparent') + ` ${i * size}px ${(i+1) * size}px`).join(', ');
+		elm.style.background = `linear-gradient(to right, ${value})`;
+	}
+}
+
 function moveShape() {
 	const elm = currentShape;
 	const { name, l, t, w, h, dots } = elm.shapeData;
@@ -195,6 +217,7 @@ function moveShape() {
 		return;
 	}
 
+	// paint new shape into board
 	for (let i=0; i < h; i++) {
 		for (let j=0; j < w; j++) {
 			if (dots[i][j] === 0) continue;
@@ -202,6 +225,41 @@ function moveShape() {
 		}
 	}
 
+	// clear rows
+	(() => {
+		const rows = [];
+		const n = board[0].length;
+
+		for (let r=t; r < t + h; r++) {
+			const sum = board[r].reduce((r,v) => r + v);
+			if (sum !== n) continue;
+
+			rows.push(r);
+
+			for (let c=0; c < n; c++) {
+				board[r][c] = 0;
+			}
+		}
+
+
+		while (rows.length) {
+			const bot = rows.pop();
+
+			for (let r=bot; r > 0; r--) {
+				for (let c=0; c < n; c++) {
+					board[r][c] = board[r - 1][c];
+				}
+			}
+
+			for (let i=0; i < rows.length; i++) {
+				rows[i] += 1;
+			}
+		}
+	})();
+
+
+	reDrawBoard();
+	elmBoard.removeChild(currentShape);
 	currentShape = createShape();
 }
 
@@ -216,8 +274,6 @@ function startEngine() {
 	downInterval = setInterval(() => {
 		actionHandler();
 	}, SPEEDUP_DOWN);
-
-	setTimeout(() => clearInterval(engineInterval), 50000);
 }
 
 function startGame() {

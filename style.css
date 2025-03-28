@@ -299,3 +299,9 @@ h3 {
 	height: var(--content-height);
 	overflow: hidden;
 }
+
+.board__item {
+	position: absolute;
+	width: 100%;
+	height: var(--shape-size);
+}
