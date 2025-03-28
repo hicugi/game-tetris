@@ -133,30 +133,30 @@ h3 {
 /* shape LEG */
 .shape-leg,
 .shape-leg_3,
-.shape-leg_r,
-.shape-leg_r3 {
+.shape-legr,
+.shape-legr_3 {
 	width: calc(var(--shape-size) * 3);
 	height: calc(var(--shape-size) * 2);
 }
 .shape-leg_2,
 .shape-leg_4,
-.shape-leg_r2,
-.shape-leg_r4 {
+.shape-legr_2,
+.shape-legr_4 {
 	width: calc(var(--shape-size) * 2);
 	height: calc(var(--shape-size) * 3);
 }
 
 .shape-leg::before,
 .shape-leg_3::before,
-.shape-leg_r::before,
-.shape-leg_r3::before {
+.shape-legr::before,
+.shape-legr_3::before {
 	width: var(--shape-size);
 	height: 50%;
 }
 .shape-leg_2::before,
 .shape-leg_4::before,
-.shape-leg_r2::before,
-.shape-leg_r4::before {
+.shape-legr_2::before,
+.shape-legr_4::before {
 	width: 50%;
 	height: var(--shape-size);
 }
@@ -164,16 +164,16 @@ h3 {
 .shape-leg::after,
 .shape-leg_2::after,
 .shape-leg_3::after,
-.shape-leg_r::after,
-.shape-leg_r3::after {
+.shape-legr::after,
+.shape-legr_3::after {
 	width: 100%;
 	height: 50%;
 }
 .shape-leg_2::after,
 .shape-leg_4::after,
 .shape-leg_2::after,
-.shape-leg_r2::after,
-.shape-leg_r4::after {
+.shape-legr_2::after,
+.shape-legr_4::after {
 	width: 50%;
 	height: 100%;
 }
@@ -181,50 +181,50 @@ h3 {
 .shape-leg_2::after,
 .shape-leg_3::before,
 .shape-leg_4::before,
-.shape-leg_r2::before,
-.shape-leg_r3::before,
-.shape-leg_r4::after {
+.shape-legr_2::before,
+.shape-legr_3::before,
+.shape-legr_4::after {
 	right: 0;
 }
 
 .shape-leg::before,
 .shape-leg_3::after,
 .shape-leg_4::before,
-.shape-leg_r::after,
-.shape-leg_r3::before,
-.shape-leg_r4::before {
+.shape-legr::after,
+.shape-legr_3::before,
+.shape-legr_4::before {
 	bottom: 0;
 }
 
 /* shape Z */
 .shape-z,
-.shape-z_r {
+.shape-zr {
 	width: calc(var(--shape-size) * 3);
 	height: calc(var(--shape-size) * 2);
 }
 .shape-z_2,
-.shape-z_r2 {
+.shape-zr_2 {
 	width: calc(var(--shape-size) * 2);
 	height: calc(var(--shape-size) * 3);
 }
 .shape-z::before, .shape-z::after,
-.shape-z_r::before, .shape-z_r::after {
+.shape-zr::before, .shape-zr::after {
 	width: calc(var(--shape-size) * 2);
 	height: 50%;
 }
 .shape-z_2::before, .shape-z_2::after,
 .shape-z_4::before, .shape-z_4::after,
-.shape-z_r2::before, .shape-z_r2::after {
+.shape-zr_2::before, .shape-zr_2::after {
 	width: 50%;
 	height: calc(var(--shape-size) * 2);
 }
 
 .shape-z::after, .shape-z_2::after,
-.shape-z_r::before, .shape-z_r2::after {
+.shape-zr::before, .shape-zr_2::after {
 	right: 0;
 }
 .shape-z::after, .shape-z_2::before,
-.shape-z_r::after, .shape-z_r2::after {
+.shape-zr::after, .shape-zr_2::after {
 	bottom: 0;
 }
 
