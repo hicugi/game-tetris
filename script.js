@@ -1,5 +1,5 @@
-const DROP_SPEED = 500;
-const SPEEDUP_DOWN = 74;
+const INTERVAL = 50;
+const GAME_SPEED = 1000;
 
 const BOARD_SIZE = [10, 24];
 const SHAPE_SIZE = 32;
@@ -89,11 +89,7 @@ function updateStats(name) {
 	elm.innerText = Number(elm.innerText) + 1;
 }
 
-let isRotateShapeActive = false;
 function rotateShape(elm) {
-	if (isRotateShapeActive) return;
-	isRotateShapeActive = true;
-
 	let { l, t, name } = elm.shapeData;
 
 	const variants = SHAPE_GROUP[name.replace(/_\d$/, '')];
@@ -191,9 +187,12 @@ function actionHandler() {
 		return;
 	}
 
-	if (action === 'U') {
-		rotateShape(elm);
-	}
+}
+function actionRotate() {
+	const elm = currentShape;
+	const { t, l, w, h, dots } = elm.shapeData;
+
+	rotateShape(elm);
 }
 
 (function drawBoard() {
@@ -274,17 +273,23 @@ function moveShape() {
 	currentShape = createShape();
 }
 
-let downInterval, actionInterval, rotateInterval;
+let engineInterval;
 function startEngine() {
-	clearInterval(downInterval);
+	clearInterval(engineInterval);
 
-	downInterval = setInterval(() => {
-		moveShape();
-		isRotateShapeActive = false;
-	}, DROP_SPEED);
-	downInterval = setInterval(() => {
+	let moveTime = 0;
+	let speed = GAME_SPEED;
+
+	engineInterval = setInterval(() => {
+		moveTime += INTERVAL;
+
 		actionHandler();
-	}, SPEEDUP_DOWN);
+
+		if (moveTime > speed) {
+			moveShape();
+			moveTime = 0;
+		}
+	}, INTERVAL);
 }
 
 function startGame() {
@@ -296,6 +301,11 @@ document.addEventListener('keydown', (e) => {
 	const direction = DIRECTIONS[e.key];
 
 	if (direction === undefined) return;
+
+	if (direction === 'U') {
+		actionRotate();
+		return;
+	}
 
 	action = direction;
 });
