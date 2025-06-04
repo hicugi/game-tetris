@@ -2,7 +2,7 @@ body {
 	--shape-size: 32px;
 	--shape-f-color: #000;
 	--content-width: calc(var(--shape-size) * 10);
-	--content-height: calc(var(--shape-size) * 24);
+	--content-height: calc(var(--shape-size) * 20);
 	--sidebar-width: 320px;
 
 	margin: 0;

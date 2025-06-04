@@ -1,7 +1,7 @@
 const INTERVAL = 50;
 const GAME_SPEED = 1000;
 
-const BOARD_SIZE = [10, 24];
+const BOARD_SIZE = [10, 20];
 const SHAPE_SIZE = 32;
 const SHAPE_LIST = [
 	'shape-f', 'shape-f_2', 'shape-f_3', 'shape-f_4',
