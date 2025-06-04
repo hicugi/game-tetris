@@ -1,5 +1,5 @@
 const INTERVAL = 50;
-const GAME_SPEED = 1000;
+const GAME_SPEED = 400;
 
 const BOARD_SIZE = [10, 20];
 const SHAPE_SIZE = 32;
@@ -47,14 +47,6 @@ const board = Array.from({ length: BOARD_SIZE[1] }, () => new Array(BOARD_SIZE[0
 
 const elmBoard = document.querySelector('#board');
 let nextShapeIdx = null;
-
-function clearBoard() {
-	for (let r=0; r < board.length; r++) {
-		for (let c=0; c < board[0].length; c++) {
-			board[r][c] = 0;
-		}
-	}
-}
 
 function setNextShape() {
 	const idx = Math.floor(Math.random() * SHAPE_LIST.length);
@@ -134,7 +126,6 @@ function createShape() {
 	};
 
 	elmMoveShape(elm, t, l);
-	
 	updateStats(name);
 
 	elmBoard.appendChild(elm);
@@ -195,46 +186,50 @@ function actionRotate() {
 	rotateShape(elm);
 }
 
-(function drawBoard() {
-	for (let i=0; i < board.length; i++) {
-		const elm = document.createElement('DIV');
-		elm.classList.add('board__item');
-		elm.style.top = `${i * SHAPE_SIZE}px`;
-		elmBoard.appendChild(elm);
-	}
-})();
-
-function reDrawBoard() {
-	const size = SHAPE_SIZE;
-	const elms = [...elmBoard.querySelectorAll('.board__item')];
-
-	for (let r=0; r < board.length; r++) {
-		const elm = elms[r];
-
-		const value = board[r].map((v,i) => (v === 1 ? '#000' : 'transparent') + ` ${i * size}px ${(i+1) * size}px`).join(', ');
-		elm.style.background = `linear-gradient(to right, ${value})`;
-	}
-}
-
-function moveShape() {
-	const elm = currentShape;
-	const { name, l, t, w, h, dots } = elm.shapeData;
-
-	if (validatePosition(dots, t + 1, l)) {
-		elmMoveShape(elm, t + 1, l);
-		return;
-	}
-
-	// paint new shape into board
-	for (let i=0; i < h; i++) {
-		for (let j=0; j < w; j++) {
-			if (dots[i][j] === 0) continue;
-			board[t + i][l + j] = 1;
+const boardCtrl = {
+	clear() {
+		for (let r=0; r < board.length; r++) {
+			for (let c=0; c < board[0].length; c++) {
+				board[r][c] = 0;
+			}
 		}
-	}
+	},
 
-	// clear rows
-	(() => {
+	init() {
+		for (let i=0; i < board.length; i++) {
+			const elm = document.createElement('DIV');
+			elm.classList.add('board__item');
+			elm.style.top = `${i * SHAPE_SIZE}px`;
+			elmBoard.appendChild(elm);
+		}
+	},
+
+	drawLastShape() {
+		const size = SHAPE_SIZE;
+		const elms = [...elmBoard.querySelectorAll('.board__item')];
+
+		for (let r=0; r < board.length; r++) {
+			const elm = elms[r];
+
+			const value = board[r].map((v,i) => (v === 1 ? '#000' : 'transparent') + ` ${i * size}px ${(i+1) * size}px`).join(', ');
+			elm.style.background = `linear-gradient(to right, ${value})`;
+		}
+	},
+
+	update() {
+		const { name, l, t, w, h, dots } = currentShape.shapeData;
+
+		for (let i=0; i < h; i++) {
+			for (let j=0; j < w; j++) {
+				if (dots[i][j] === 0) continue;
+				board[t + i][l + j] = 1;
+			}
+		}
+	},
+
+	clearRow() {
+		const { l, t, w, h } = currentShape.shapeData;
+
 		const rows = [];
 		const n = board[0].length;
 
@@ -265,10 +260,23 @@ function moveShape() {
 				rows[i] += 1;
 			}
 		}
-	})();
+	},
+};
+boardCtrl.init();
 
+function moveShape() {
+	const elm = currentShape;
+	const { name, l, t, w, h, dots } = elm.shapeData;
 
-	reDrawBoard();
+	if (validatePosition(dots, t + 1, l)) {
+		elmMoveShape(elm, t + 1, l);
+		return;
+	}
+
+	boardCtrl.update();
+	boardCtrl.clearRow();
+
+	boardCtrl.drawLastShape();
 	elmBoard.removeChild(currentShape);
 	currentShape = createShape();
 }
@@ -293,7 +301,7 @@ function startEngine() {
 }
 
 function startGame() {
-	clearBoard();
+	boardCtrl.clear();
 	startEngine();
 }
 
