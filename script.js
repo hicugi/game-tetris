@@ -1,5 +1,5 @@
 const INTERVAL = 50;
-const GAME_SPEED = 400;
+const GAME_SPEED = 1000;
 
 const BOARD_SIZE = [10, 20];
 const SHAPE_SIZE = 32;
@@ -13,12 +13,12 @@ const SHAPE_LIST = [
 ];
 
 const SHAPE_INFO = {
-	'shape-f': [3, 2, [[0, 1, 0], [1,1,1]]], 'shape-f_2': [2, 3, [[1,0],[1,1],[1,0]]], 'shape-f_3': [3, 2, [[1,1,1],[0,1,0]]], 'shape-f_4': [2, 3, [[0,1],[1,1],[0,1]]],
-	'shape-leg': [3, 2, [[1,1,1],[1,0,0]]], 'shape-leg_2': [2, 3, [[1,1],[0,1],[0,1]]], 'shape-leg_3': [3, 2, [[0,0,1],[1,1,1]]], 'shape-leg_4': [2, 3, [[1,0],[1,0],[1,1]]],
-	'shape-legr': [3, 2, [[1,0,0],[1,1,1]]], 'shape-legr_2': [2, 3, [[1,1],[1,0],[1,0]]], 'shape-legr_3': [3, 2, [[1,1,1],[0,0,1]]], 'shape-legr_4': [2, 3, [[0,1],[0,1],[1,1]]],
-	'shape-z': [3, 2, [[1,1,0],[0,1,1]]], 'shape-z_2': [2, 3, [[0,1],[1,1],[1,0]]], 'shape-zr': [3, 2, [[0,1,1],[1,1,0]]], 'shape-zr_2': [2, 3, [[1,0],[1,1],[0,1]]],
-	'shape-square': [2, 2, [[1,1],[1,1]]],
-	'shape-line': [4, 1, [[1,1,1,1]]], 'shape-line_2': [1, 4, [[1],[1],[1],[1]]],
+	'shape-f': [3, 2, [[0, 1, 0], [1, 1, 1]]], 'shape-f_2': [2, 3, [[1, 0], [1, 1], [1, 0]]], 'shape-f_3': [3, 2, [[1, 1, 1], [0, 1, 0]]], 'shape-f_4': [2, 3, [[0, 1], [1, 1], [0, 1]]],
+	'shape-leg': [3, 2, [[1, 1, 1], [1, 0, 0]]], 'shape-leg_2': [2, 3, [[1, 1], [0, 1], [0, 1]]], 'shape-leg_3': [3, 2, [[0, 0, 1], [1, 1, 1]]], 'shape-leg_4': [2, 3, [[1, 0], [1, 0], [1, 1]]],
+	'shape-legr': [3, 2, [[1, 0, 0], [1, 1, 1]]], 'shape-legr_2': [2, 3, [[1, 1], [1, 0], [1, 0]]], 'shape-legr_3': [3, 2, [[1, 1, 1], [0, 0, 1]]], 'shape-legr_4': [2, 3, [[0, 1], [0, 1], [1, 1]]],
+	'shape-z': [3, 2, [[1, 1, 0], [0, 1, 1]]], 'shape-z_2': [2, 3, [[0, 1], [1, 1], [1, 0]]], 'shape-zr': [3, 2, [[0, 1, 1], [1, 1, 0]]], 'shape-zr_2': [2, 3, [[1, 0], [1, 1], [0, 1]]],
+	'shape-square': [2, 2, [[1, 1], [1, 1]]],
+	'shape-line': [4, 1, [[1, 1, 1, 1]]], 'shape-line_2': [1, 4, [[1], [1], [1], [1]]],
 };
 
 const SHAPE_GROUP = {
@@ -47,6 +47,14 @@ const board = Array.from({ length: BOARD_SIZE[1] }, () => new Array(BOARD_SIZE[0
 
 const elmBoard = document.querySelector('#board');
 let nextShapeIdx = null;
+
+function clearBoard() {
+	for (let r = 0; r < board.length; r++) {
+		for (let c = 0; c < board[0].length; c++) {
+			board[r][c] = 0;
+		}
+	}
+}
 
 function setNextShape() {
 	const idx = Math.floor(Math.random() * SHAPE_LIST.length);
@@ -81,7 +89,11 @@ function updateStats(name) {
 	elm.innerText = Number(elm.innerText) + 1;
 }
 
+let isRotateShapeActive = false;
 function rotateShape(elm) {
+	if (isRotateShapeActive) return;
+	isRotateShapeActive = true;
+
 	let { l, t, name } = elm.shapeData;
 
 	const variants = SHAPE_GROUP[name.replace(/_\d$/, '')];
@@ -116,7 +128,7 @@ function createShape() {
 
 	const randomShift = Math.round(w & 1 && Math.random() * 1);
 	const l = BOARD_SIZE[0] / 2 - Math.floor(w / 2) - randomShift;
-	const t = 1 - h;
+	const t = 0;
 
 	elm.shapeData = {
 		name,
@@ -126,6 +138,7 @@ function createShape() {
 	};
 
 	elmMoveShape(elm, t, l);
+
 	updateStats(name);
 
 	elmBoard.appendChild(elm);
@@ -139,8 +152,8 @@ function validatePosition(dots, y, x) {
 	if (h + y > BOARD_SIZE[1]) return false;
 	if (x < 0 || w + x > BOARD_SIZE[0]) return false;
 
-	for (let i=0; i < h; i++) {
-		for (let j=0; j < w; j++) {
+	for (let i = 0; i < h; i++) {
+		for (let j = 0; j < w; j++) {
 			if (dots[i][j] === 0) continue;
 			if (y + i < 0) continue;
 
@@ -186,60 +199,56 @@ function actionRotate() {
 	rotateShape(elm);
 }
 
-const boardCtrl = {
-	clear() {
-		for (let r=0; r < board.length; r++) {
-			for (let c=0; c < board[0].length; c++) {
-				board[r][c] = 0;
-			}
+(function drawBoard() {
+	for (let i = 0; i < board.length; i++) {
+		const elm = document.createElement('DIV');
+		elm.classList.add('board__item');
+		elm.style.top = `${i * SHAPE_SIZE}px`;
+		elmBoard.appendChild(elm);
+	}
+})();
+
+function reDrawBoard() {
+	const size = SHAPE_SIZE;
+	const elms = [...elmBoard.querySelectorAll('.board__item')];
+
+	for (let r = 0; r < board.length; r++) {
+		const elm = elms[r];
+
+		const value = board[r].map((v, i) => (v === 1 ? '#000' : 'transparent') + ` ${i * size}px ${(i + 1) * size}px`).join(', ');
+		elm.style.background = `linear-gradient(to right, ${value})`;
+	}
+}
+
+function moveShape() {
+	const elm = currentShape;
+	const { name, l, t, w, h, dots } = elm.shapeData;
+
+	if (validatePosition(dots, t + 1, l)) {
+		elmMoveShape(elm, t + 1, l);
+		return;
+	}
+
+	// paint new shape into board
+	for (let i = 0; i < h; i++) {
+		for (let j = 0; j < w; j++) {
+			if (dots[i][j] === 0) continue;
+			board[t + i][l + j] = 1;
 		}
-	},
+	}
 
-	init() {
-		for (let i=0; i < board.length; i++) {
-			const elm = document.createElement('DIV');
-			elm.classList.add('board__item');
-			elm.style.top = `${i * SHAPE_SIZE}px`;
-			elmBoard.appendChild(elm);
-		}
-	},
-
-	drawLastShape() {
-		const size = SHAPE_SIZE;
-		const elms = [...elmBoard.querySelectorAll('.board__item')];
-
-		for (let r=0; r < board.length; r++) {
-			const elm = elms[r];
-
-			const value = board[r].map((v,i) => (v === 1 ? '#000' : 'transparent') + ` ${i * size}px ${(i+1) * size}px`).join(', ');
-			elm.style.background = `linear-gradient(to right, ${value})`;
-		}
-	},
-
-	update() {
-		const { name, l, t, w, h, dots } = currentShape.shapeData;
-
-		for (let i=0; i < h; i++) {
-			for (let j=0; j < w; j++) {
-				if (dots[i][j] === 0) continue;
-				board[t + i][l + j] = 1;
-			}
-		}
-	},
-
-	clearRow() {
-		const { l, t, w, h } = currentShape.shapeData;
-
+	// clear rows
+	(() => {
 		const rows = [];
 		const n = board[0].length;
 
-		for (let r=t; r < t + h; r++) {
-			const sum = board[r].reduce((r,v) => r + v);
+		for (let r = t; r < t + h; r++) {
+			const sum = board[r].reduce((r, v) => r + v);
 			if (sum !== n) continue;
 
 			rows.push(r);
 
-			for (let c=0; c < n; c++) {
+			for (let c = 0; c < n; c++) {
 				board[r][c] = 0;
 			}
 		}
@@ -250,70 +259,63 @@ const boardCtrl = {
 		while (rows.length) {
 			const bot = rows.pop();
 
-			for (let r=bot; r > 0; r--) {
-				for (let c=0; c < n; c++) {
+			for (let r = bot; r > 0; r--) {
+				for (let c = 0; c < n; c++) {
 					board[r][c] = board[r - 1][c];
 				}
 			}
 
-			for (let i=0; i < rows.length; i++) {
+			for (let i = 0; i < rows.length; i++) {
 				rows[i] += 1;
 			}
 		}
-	},
-};
-boardCtrl.init();
+	})();
 
-function checkNextPosition() {
-	const { l, t, dots } = currentShape.shapeData;
-	return validatePosition(dots, t + 1, l);
-}
-function actionOnDrop() {
-	boardCtrl.update();
-	boardCtrl.clearRow();
-
-	boardCtrl.drawLastShape();
+	reDrawBoard();
 	elmBoard.removeChild(currentShape);
 	currentShape = createShape();
 }
-function actionTime() {
-	const elm = currentShape;
-	const { name, l, t, w, h, dots } = elm.shapeData;
 
-	if (checkNextPosition()) {
-		elmMoveShape(elm, t + 1, l);
+const engine = {
+	interval: null,
+	isPaused: false,
 
-		if (!checkNextPosition()) {
-			actionOnDrop();
-		}
-		return;
+	/**
+	* @param {number} time
+	*/
+	delay(time) {
+		this.isPaused = true;
+
+		setTimeout(() => {
+			this.isPaused = false;
+		}, time);
+	},
+
+	start() {
+		clearInterval(this.engineInterval);
+
+		let moveTime = 0;
+		let speed = GAME_SPEED;
+
+		this.engineInterval = setInterval(() => {
+			moveTime += INTERVAL;
+
+			if (this.isPaused) return;
+
+			actionHandler();
+
+			if (moveTime > speed) {
+				moveShape();
+				moveTime = 0;
+				isRotateShapeActive = false;
+			}
+		}, INTERVAL);
 	}
-
-	actionOnDrop();
-}
-
-let engineInterval;
-function startEngine() {
-	clearInterval(engineInterval);
-
-	let moveTime = 0;
-	let speed = GAME_SPEED;
-
-	engineInterval = setInterval(() => {
-		moveTime += INTERVAL;
-
-		actionHandler();
-
-		if (moveTime > speed) {
-			actionTime();
-			moveTime = 0;
-		}
-	}, INTERVAL);
-}
+};
 
 function startGame() {
-	boardCtrl.clear();
-	startEngine();
+	clearBoard();
+	engine.start();
 }
 
 document.addEventListener('keydown', (e) => {
@@ -321,15 +323,16 @@ document.addEventListener('keydown', (e) => {
 
 	if (direction === undefined) return;
 
-	if (direction === 'U') {
-		actionRotate();
-		return;
-	}
-
 	action = direction;
 });
 document.addEventListener('keyup', (e) => {
 	action = null;
+
+	const direction = DIRECTIONS[e.key];
+
+	if (direction === 'U') {
+		actionRotate();
+	}
 });
 
 startGame();
