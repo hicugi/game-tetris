@@ -264,21 +264,32 @@ const boardCtrl = {
 };
 boardCtrl.init();
 
-function moveShape() {
-	const elm = currentShape;
-	const { name, l, t, w, h, dots } = elm.shapeData;
-
-	if (validatePosition(dots, t + 1, l)) {
-		elmMoveShape(elm, t + 1, l);
-		return;
-	}
-
+function checkNextPosition() {
+	const { l, t, dots } = currentShape.shapeData;
+	return validatePosition(dots, t + 1, l);
+}
+function actionOnDrop() {
 	boardCtrl.update();
 	boardCtrl.clearRow();
 
 	boardCtrl.drawLastShape();
 	elmBoard.removeChild(currentShape);
 	currentShape = createShape();
+}
+function actionTime() {
+	const elm = currentShape;
+	const { name, l, t, w, h, dots } = elm.shapeData;
+
+	if (checkNextPosition()) {
+		elmMoveShape(elm, t + 1, l);
+
+		if (!checkNextPosition()) {
+			actionOnDrop();
+		}
+		return;
+	}
+
+	actionOnDrop();
 }
 
 let engineInterval;
@@ -294,7 +305,7 @@ function startEngine() {
 		actionHandler();
 
 		if (moveTime > speed) {
-			moveShape();
+			actionTime();
 			moveTime = 0;
 		}
 	}, INTERVAL);
