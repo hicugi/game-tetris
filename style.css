@@ -70,162 +70,134 @@ h3 {
 }
 
 .shape {
+	--transition-delay: 0.1s;
 	position: absolute;
 	display: block;
 	color: var(--shape-f-color);
+	transition: ease-out var(--transition-delay);
 }
-.shape::before,
-.shape::after {
+.shape div {
+	position: absolute;
+	transform-origin: 0 0;
+}
+.shape div::before,
+.shape div::after {
 	position: absolute;
 	background-color: currentcolor;
 	content: "";
 }
 
 /* shape F */
-.shape-f,
-.shape-f_3 {
+.shape-f {
+	width: calc(var(--shape-size) * 3);
+	height: calc(var(--shape-size) * 3);
+}
+.shape-f div {
 	width: calc(var(--shape-size) * 3);
 	height: calc(var(--shape-size) * 2);
 }
-.shape-f_2,
-.shape-f_4 {
-	width: calc(var(--shape-size) * 2);
-	height: calc(var(--shape-size) * 3);
-}
-
-.shape-f::before,
-.shape-f_3::before {
+.shape-f div::before {
 	left: 50%;
 	transform: translateX(-50%);
 	width: var(--shape-size);
-	height: 50%;
-}
-.shape-f_3::before {
-	top: 50%;
-}
-.shape-f::after,
-.shape-f_3::after {
-	width: 100%;
-	height: 50%;
-}
-.shape-f::after {
-	top: 50%;
-}
-.shape-f_2::before,
-.shape-f_4::before {
-	top: 50%;
-	transform: translateY(-50%);
-	width: 50%;
 	height: var(--shape-size);
 }
-.shape-f_2::before {
-	left: 50%;
+.shape-f div::after {
+	top: 50%;
+	width: calc(3 * var(--shape-size));
+	height: var(--shape-size);
 }
-.shape-f_2::after,
-.shape-f_4::after {
-	width: 50%;
-	height: 100%;
+
+.shape-f_2 div,
+.shape-f_4 div {
+	left: var(--shape-size);
+	transform: rotate(90deg) translateY(-100%);
 }
-.shape-f_4::after {
-	left: 50%;
+.shape-f_3 div {
+	top: var(--shape-size);
+	transform: rotate(180deg) translate(-100%, -100%);
+}
+.shape-f_4 div {
+	transform: rotate(270deg) translate(-100%, -50%);
 }
 
 /* shape LEG */
 .shape-leg,
-.shape-leg_3,
-.shape-legr,
-.shape-legr_3 {
+.shape-legr {
+	width: calc(var(--shape-size) * 3);
+	height: calc(var(--shape-size) * 3);
+}
+.shape-leg div,
+.shape-legr div {
 	width: calc(var(--shape-size) * 3);
 	height: calc(var(--shape-size) * 2);
 }
-.shape-leg_2,
-.shape-leg_4,
-.shape-legr_2,
-.shape-legr_4 {
-	width: calc(var(--shape-size) * 2);
-	height: calc(var(--shape-size) * 3);
-}
 
-.shape-leg::before,
-.shape-leg_3::before,
-.shape-legr::before,
-.shape-legr_3::before {
-	width: var(--shape-size);
-	height: 50%;
-}
-.shape-leg_2::before,
-.shape-leg_4::before,
-.shape-legr_2::before,
-.shape-legr_4::before {
-	width: 50%;
+.shape-leg div::before,
+.shape-legr div::before {
+	width: calc(var(--shape-size) * 3);
 	height: var(--shape-size);
 }
-
-.shape-leg::after,
-.shape-leg_2::after,
-.shape-leg_3::after,
-.shape-legr::after,
-.shape-legr_3::after {
-	width: 100%;
-	height: 50%;
+.shape-leg div::after,
+.shape-legr div::after {
+	width: var(--shape-size);
+	height: var(--shape-size);
 }
-.shape-leg_2::after,
-.shape-leg_4::after,
-.shape-leg_2::after,
-.shape-legr_2::after,
-.shape-legr_4::after {
-	width: 50%;
-	height: 100%;
+.shape-leg div::after,
+.shape-legr div::after {
+	top: var(--shape-size);
+}
+.shape-legr div::after {
+	left: calc(var(--shape-size) * 2);
 }
 
-.shape-leg_2::after,
-.shape-leg_3::before,
-.shape-leg_4::before,
-.shape-legr_2::before,
-.shape-legr_3::before,
-.shape-legr_4::after {
-	right: 0;
+.shape-leg_2 div,
+.shape-leg_4 div,
+.shape-legr_2 div,
+.shape-legr_4 div {
+	left: calc(var(--shape-size) * 3);
+	transform: rotate(90deg);
 }
-
-.shape-leg::before,
-.shape-leg_3::after,
-.shape-leg_4::before,
-.shape-legr::after,
-.shape-legr_3::before,
-.shape-legr_4::before {
-	bottom: 0;
+.shape-leg_3 div,
+.shape-legr_3 div {
+	left: calc(var(--shape-size) * 3);
+	top: calc(var(--shape-size) * 3);
+	transform: rotate(180deg);
+}
+.shape-leg_4 div,
+.shape-legr_4 div {
+	left: 0;
+	top: calc(var(--shape-size) * 3);
+	transform: rotate(270deg);
 }
 
 /* shape Z */
-.shape-z,
-.shape-zr {
+.shape-z, .shape-z div,
+.shape-zr, .shape-zr div {
 	width: calc(var(--shape-size) * 3);
 	height: calc(var(--shape-size) * 2);
 }
-.shape-z_2,
-.shape-zr_2 {
+
+.shape-z div::before, .shape-z div::after,
+.shape-zr div::before, .shape-zr div::after {
 	width: calc(var(--shape-size) * 2);
-	height: calc(var(--shape-size) * 3);
-}
-.shape-z::before, .shape-z::after,
-.shape-zr::before, .shape-zr::after {
-	width: calc(var(--shape-size) * 2);
-	height: 50%;
-}
-.shape-z_2::before, .shape-z_2::after,
-.shape-z_4::before, .shape-z_4::after,
-.shape-zr_2::before, .shape-zr_2::after {
-	width: 50%;
-	height: calc(var(--shape-size) * 2);
+	height: var(--shape-size);
 }
 
-.shape-z::after, .shape-z_2::after,
-.shape-zr::before, .shape-zr_2::after {
+.shape-z div::after {
+	top: 50%;
 	right: 0;
 }
-.shape-z::after, .shape-z_2::before,
-.shape-zr::after, .shape-zr_2::after {
-	bottom: 0;
+.shape-zr div::before {
+	right: 0;
+}
+.shape-zr div::after {
+	top: 50%;
+}
+
+.shape-z_2 div, .shape-z_4 div,
+.shape-zr_2 div, .shape-zr_4 div {
+	transform: rotate(90deg) translateY(-100%);
 }
 
 /* shape square */
@@ -237,17 +209,17 @@ h3 {
 }
 
 /* shape square */
-.shape-line {
+.shape-line,
+.shape-line div {
 	width: calc(var(--shape-size) * 4);
-	height: calc(var(--shape-size) * 1);
-	color: var(--shape-f-color);
-	background-color: currentcolor;
+	height: var(--shape-size);
 }
-.shape-line_2 {
-	width: calc(var(--shape-size) * 1);
-	height: calc(var(--shape-size) * 4);
-	color: var(--shape-f-color);
-	background-color: currentcolor;
+.shape-line div::before {
+	width: calc(var(--shape-size) * 4);
+	height: var(--shape-size);
+}
+.shape-line_2 div {
+	transform: rotate(90deg) translateY(-100%);
 }
 
 .next-shape {

@@ -4,31 +4,32 @@ const GAME_SPEED = 1000;
 const BOARD_SIZE = [10, 20];
 const SHAPE_SIZE = 32;
 const SHAPE_LIST = [
-	'shape-f', 'shape-f_2', 'shape-f_3', 'shape-f_4',
-	'shape-leg', 'shape-leg_2', 'shape-leg_3', 'shape-leg_4',
-	'shape-legr', 'shape-legr_2', 'shape-legr_3', 'shape-legr_4',
-	'shape-z', 'shape-z_2', 'shape-zr', 'shape-zr_2',
-	'shape-square',
-	'shape-line', 'shape-line_2',
+	'shape-f_1', 'shape-f_2', 'shape-f_3', 'shape-f_4',
+	'shape-leg_1', 'shape-leg_2', 'shape-leg_3', 'shape-leg_4',
+	'shape-legr_1', 'shape-legr_2', 'shape-legr_3', 'shape-legr_4',
+	'shape-z_1', 'shape-z_2', 'shape-zr_1', 'shape-zr_2',
+	'shape-square_1',
+	'shape-line_1', 'shape-line_2',
 ];
 
-const SHAPE_INFO = {
-	'shape-f': [3, 2, [[0, 1, 0], [1, 1, 1]]], 'shape-f_2': [2, 3, [[1, 0], [1, 1], [1, 0]]], 'shape-f_3': [3, 2, [[1, 1, 1], [0, 1, 0]]], 'shape-f_4': [2, 3, [[0, 1], [1, 1], [0, 1]]],
-	'shape-leg': [3, 2, [[1, 1, 1], [1, 0, 0]]], 'shape-leg_2': [2, 3, [[1, 1], [0, 1], [0, 1]]], 'shape-leg_3': [3, 2, [[0, 0, 1], [1, 1, 1]]], 'shape-leg_4': [2, 3, [[1, 0], [1, 0], [1, 1]]],
-	'shape-legr': [3, 2, [[1, 0, 0], [1, 1, 1]]], 'shape-legr_2': [2, 3, [[1, 1], [1, 0], [1, 0]]], 'shape-legr_3': [3, 2, [[1, 1, 1], [0, 0, 1]]], 'shape-legr_4': [2, 3, [[0, 1], [0, 1], [1, 1]]],
-	'shape-z': [3, 2, [[1, 1, 0], [0, 1, 1]]], 'shape-z_2': [2, 3, [[0, 1], [1, 1], [1, 0]]], 'shape-zr': [3, 2, [[0, 1, 1], [1, 1, 0]]], 'shape-zr_2': [2, 3, [[1, 0], [1, 1], [0, 1]]],
-	'shape-square': [2, 2, [[1, 1], [1, 1]]],
-	'shape-line': [4, 1, [[1, 1, 1, 1]]], 'shape-line_2': [1, 4, [[1], [1], [1], [1]]],
+const SHAPE_DOTS = {
+	'f_1': [0b010, 0b111, 0b000], 'f_2': [0b010, 0b011, 0b010], 'f_3': [0b000, 0b111, 0b010], 'f_4': [0b010, 0b110, 0b010],
+	'leg_1': [0b111, 0b100, 0b000], 'leg_2': [0b011, 0b001, 0b001], 'leg_3': [0b000, 0b001, 0b111], 'leg_4': [0b100, 0b100, 0b110],
+	'legr_1': [0b111, 0b001, 0b000], 'legr_2': [0b001, 0b001, 0b011], 'legr_3': [0b011, 0b001, 0b001], 'legr_4': [0b110, 0b100, 0b100],
+	'z_1': [3, 2, [[1, 1, 0], [0, 1, 1]]], 'z_2': [2, 3, [[0, 1], [1, 1], [1, 0]]], 'z_3': [3, 2, [[1, 1, 0], [0, 1, 1]]], 'z_4': [2, 3, [[0, 1], [1, 1], [1, 0]]],
+	'zr_1': [3, 2, [[0, 1, 1], [1, 1, 0]]], 'zr_2': [2, 3, [[1, 0], [1, 1], [0, 1]]],
+	'square_1': [2, 2, [[1, 1], [1, 1]]],
+	'line_1': [4, 1, [[1, 1, 1, 1]]], 'line_2': [1, 4, [[1], [1], [1], [1]]],
 };
 
 const SHAPE_GROUP = {
-	'shape-f': ['shape-f', 'shape-f_2', 'shape-f_3', 'shape-f_4'],
-	'shape-leg': ['shape-leg', 'shape-leg_2', 'shape-leg_3', 'shape-leg_4'],
-	'shape-legr': ['shape-legr', 'shape-legr_2', 'shape-legr_3', 'shape-legr_4'],
-	'shape-z': ['shape-z', 'shape-z_2'],
-	'shape-zr': ['shape-zr', 'shape-zr_2'],
-	'shape-square': ['shape-square'],
-	'shape-line': ['shape-line', 'shape-line_2'],
+	'shape-f': ['shape-f_1', 'shape-f_2', 'shape-f_3', 'shape-f_4'],
+	'shape-leg': ['shape-leg_1', 'shape-leg_2', 'shape-leg_3', 'shape-leg_4'],
+	'shape-legr': ['shape-legr_1', 'shape-legr_2', 'shape-legr_3', 'shape-legr_4'],
+	'shape-z': ['shape-z_1', 'shape-z_2', 'shape-z_3', 'shape-z_4'],
+	'shape-zr': ['shape-zr_1', 'shape-zr_2'],
+	'shape-square': ['shape-square_1'],
+	'shape-line': ['shape-line_1', 'shape-line_2'],
 };
 
 const DIRECTIONS = {
@@ -42,6 +43,102 @@ const DIRECTIONS = {
 	j: 'D',
 	k: 'U',
 };
+
+const shapes = {
+	init() {
+		this.initStatsElms();
+		this.initDotSizes();
+	},
+
+	/**
+	 * @param {number} idx
+	 * @param {boolean} skipExtraParams - Don't create shapeData which related to board
+	 */
+	create(idx, skipExtraParams = false) {
+		const elm = document.createElement('DIV');
+		elm.appendChild(document.createElement('DIV'));
+
+		const name = SHAPE_LIST[idx];
+		const groupName = this.getGroup(idx);
+		elm.className = `shape ${groupName} ${name}`;
+
+		if (skipExtraParams) {
+			return elm;
+		}
+
+		const l = BOARD_SIZE[0] / 2 - Math.floor(this.getDots(name).w / 2);
+		const t = 0;
+
+		elm.shapeData = {
+			name,
+			t, l,
+		};
+
+		return elm;
+	},
+
+	/**
+	 * @param {string} name
+	 */
+	getDots(name) {
+		return SHAPE_DOTS[name.replace('shape-', '')];
+	},
+
+	/**
+	 * @param {number} idx
+	 */
+	getGroup(idx) {
+		const s = SHAPE_LIST[idx];
+		return s.substring(0, s.length - 2);
+	},
+
+	/**
+	 * @param {number} idx
+	 */
+	getName(idx) {
+		return SHAPE_LIST[idx];
+	},
+
+	/**
+	 * @param {number} idx
+	 * @param {number} value
+	 */
+	increaseStatValue(idx, value) {
+		const groupName = this.getGroup(idx);
+		const elm = document.querySelector(`.stats [name='${groupName}']`);
+
+		elm.innerText = Number(elm.innerText) + 1;
+	},
+
+	initDotSizes() {
+		for (const key in SHAPE_DOTS) {
+			const dots = SHAPE_DOTS[key];
+			const size = dots.length;
+
+			for (let i = 0; i < dots.length; i++) {
+				const b = dots[i];
+
+				if (b === 0) continue;
+
+				dots.h = i + 1;
+				dots.w = Math.max(dots.w ?? 0, size - ((b & (-b)).toString(2).length - 1));
+				dots.l = Math.min(dots.l ?? Infinity, size - b.toString(2).length);
+			}
+		}
+	},
+
+	initStatsElms() {
+		const list = [0, 4, 8, 12, 14, 16, 17];
+
+		for (const idx of list) {
+			const groupName = this.getGroup(idx);
+			const elm = this.create(idx, true);
+
+			document.querySelector(`.stats [name='icon-${groupName}`).appendChild(elm);
+		}
+	},
+};
+shapes.init();
 
 const board = Array.from({ length: BOARD_SIZE[1] }, () => new Array(BOARD_SIZE[0]).fill(0));
 
@@ -82,80 +179,65 @@ function elmMoveShape(elm, t, l) {
 	Object.assign(elm.shapeData, { t, l });
 }
 
-function updateStats(name) {
-	const groupName = name.replace(/_\d$/, '');
-	const elm = document.querySelector(`.stats [name='${groupName}']`);
-
-	elm.innerText = Number(elm.innerText) + 1;
-}
-
-let isRotateShapeActive = false;
 function rotateShape(elm) {
-	if (isRotateShapeActive) return;
-	isRotateShapeActive = true;
-
 	let { l, t, name } = elm.shapeData;
 
-	const variants = SHAPE_GROUP[name.replace(/_\d$/, '')];
+	const variants = SHAPE_GROUP[name.substring(0, name.length - 2)];
+	if (variants.length < 2) return;
+
 	const idx = variants.indexOf(name);
 
 	const nextName = variants[(idx + 1) % variants.length];
-	const [w, h, dots] = SHAPE_INFO[nextName];
+	const [w, h, dots] = shapes.getDots(nextName);
 
-	if (validatePosition(dots, t, l)) {
+	if (validatePosition(nextName, t, l)) {
 		elm.classList.remove(name);
 		elm.classList.add(nextName);
 
-		elm.shapeData = {
+		Object.assign(elm.shapeData, {
 			name: nextName,
 			w, h,
 			t, l,
-			dots,
-		};
+		});
 
 		elmMoveShape(elm, t, l);
 	}
 }
-function createShape() {
-	const elm = document.createElement('div');
 
-	const name = SHAPE_LIST[nextShapeIdx];
-	elm.className = `shape ${name}`;
+function createBoardShape() {
+	const idx = 8; // nextShapeIdx;
+
+	const elm = shapes.create(idx);
+	const { t, l } = elm.shapeData;
 
 	setNextShape();
-
-	const [w, h, dots] = SHAPE_INFO[name];
-
-	const randomShift = Math.round(w & 1 && Math.random() * 1);
-	const l = BOARD_SIZE[0] / 2 - Math.floor(w / 2) - randomShift;
-	const t = 0;
-
-	elm.shapeData = {
-		name,
-		w, h,
-		t, l,
-		dots,
-	};
-
 	elmMoveShape(elm, t, l);
 
-	updateStats(name);
+	shapes.increaseStatValue(idx);
 
 	elmBoard.appendChild(elm);
 	return elm;
 }
 
-function validatePosition(dots, y, x) {
-	const h = dots.length;
-	const w = dots[0].length;
+/**
+ * @param {string} name - Shape name
+ * @param {number} y
+ * @param {number} x
+ */
+function validatePosition(name, y, x) {
+	const dots = shapes.getDots(name);
+	let { l, w, h } = dots;
 
 	if (h + y > BOARD_SIZE[1]) return false;
-	if (x < 0 || w + x > BOARD_SIZE[0]) return false;
+	if (x + l < 0 || w + x > BOARD_SIZE[0]) return false;
 
-	for (let i = 0; i < h; i++) {
-		for (let j = 0; j < w; j++) {
-			if (dots[i][j] === 0) continue;
-			if (y + i < 0) continue;
+	const size = dots.length;
+	for (let i = 0; i < size; i++) {
+		const b = dots[i];
+		if (b === 0) continue;
+
+		for (let j = 0; j < size; j++) {
+			if (!(b & (1 << (size - 1 - j)))) continue;
 
 			if (board[y + i] === undefined || board[y + i][x + j] === 1) {
 				return false;
@@ -166,7 +248,7 @@ function validatePosition(dots, y, x) {
 	return true;
 }
 
-let currentShape = createShape();
+let currentShape = createBoardShape();
 let action = null;
 let prevLine = BOARD_SIZE[1];
 
@@ -174,19 +256,19 @@ function actionHandler() {
 	if (action === null) return;
 
 	const elm = currentShape;
-	const { t, l, w, h, dots } = elm.shapeData;
+	const { name, t, l, w, h, dots } = elm.shapeData;
 
-	if (action === 'L' && validatePosition(dots, t, l - 1)) {
+	if (action === 'L' && validatePosition(name, t, l - 1)) {
 		elmMoveShape(elm, t, l - 1);
 		return;
 	}
 
-	if (action === 'R' && validatePosition(dots, t, l + 1)) {
+	if (action === 'R' && validatePosition(name, t, l + 1)) {
 		elmMoveShape(elm, t, l + 1);
 		return;
 	}
 
-	if (action === 'D' && validatePosition(dots, t + 1, l)) {
+	if (action === 'D' && validatePosition(name, t + 1, l)) {
 		elmMoveShape(elm, t + 1, l);
 		return;
 	}
@@ -222,18 +304,25 @@ function reDrawBoard() {
 
 function moveShape() {
 	const elm = currentShape;
-	const { name, l, t, w, h, dots } = elm.shapeData;
+	const { name, l, t } = elm.shapeData;
 
-	if (validatePosition(dots, t + 1, l)) {
+	if (validatePosition(name, t + 1, l)) {
 		elmMoveShape(elm, t + 1, l);
 		return;
 	}
 
+	const dots = shapes.getDots(name);
+	const { w, h } = dots;
+
 	// paint new shape into board
-	for (let i = 0; i < h; i++) {
-		for (let j = 0; j < w; j++) {
-			if (dots[i][j] === 0) continue;
-			board[t + i][l + j] = 1;
+	const size = dots.length;
+	for (let i = 0; i < size; i++) {
+		const b = dots[i];
+
+		for (let j = 0; j < size; j++) {
+			if (b & (1 << j)) {
+				board[t + i][l + (size - 1 - j)] = 1;
+			}
 		}
 	}
 
@@ -273,7 +362,7 @@ function moveShape() {
 
 	reDrawBoard();
 	elmBoard.removeChild(currentShape);
-	currentShape = createShape();
+	currentShape = createBoardShape();
 }
 
 const engine = {
@@ -307,7 +396,6 @@ const engine = {
 			if (moveTime > speed) {
 				moveShape();
 				moveTime = 0;
-				isRotateShapeActive = false;
 			}
 		}, INTERVAL);
 	}
@@ -327,6 +415,10 @@ document.addEventListener('keydown', (e) => {
 });
 document.addEventListener('keyup', (e) => {
 	action = null;
+
+	if (e.key == "Escape") {
+		engine.isPaused = !engine.isPaused;
+	}
 
 	const direction = DIRECTIONS[e.key];
 
