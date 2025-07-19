@@ -7,19 +7,20 @@ const SHAPE_LIST = [
 	'shape-f_1', 'shape-f_2', 'shape-f_3', 'shape-f_4',
 	'shape-leg_1', 'shape-leg_2', 'shape-leg_3', 'shape-leg_4',
 	'shape-legr_1', 'shape-legr_2', 'shape-legr_3', 'shape-legr_4',
-	'shape-z_1', 'shape-z_2', 'shape-zr_1', 'shape-zr_2',
+	'shape-z_1', 'shape-z_2', 'shape-z_3', 'shape-z_4',
+	'shape-zr_1', 'shape-zr_2', 'shape-zr_3', 'shape-zr_4',
 	'shape-square_1',
-	'shape-line_1', 'shape-line_2',
+	'shape-line_1', 'shape-line_2', 'shape-line_3', 'shape-line_4',
 ];
 
 const SHAPE_DOTS = {
 	'f_1': [0b010, 0b111, 0b000], 'f_2': [0b010, 0b011, 0b010], 'f_3': [0b000, 0b111, 0b010], 'f_4': [0b010, 0b110, 0b010],
 	'leg_1': [0b111, 0b100, 0b000], 'leg_2': [0b011, 0b001, 0b001], 'leg_3': [0b000, 0b001, 0b111], 'leg_4': [0b100, 0b100, 0b110],
 	'legr_1': [0b111, 0b001, 0b000], 'legr_2': [0b001, 0b001, 0b011], 'legr_3': [0b011, 0b001, 0b001], 'legr_4': [0b110, 0b100, 0b100],
-	'z_1': [3, 2, [[1, 1, 0], [0, 1, 1]]], 'z_2': [2, 3, [[0, 1], [1, 1], [1, 0]]], 'z_3': [3, 2, [[1, 1, 0], [0, 1, 1]]], 'z_4': [2, 3, [[0, 1], [1, 1], [1, 0]]],
-	'zr_1': [3, 2, [[0, 1, 1], [1, 1, 0]]], 'zr_2': [2, 3, [[1, 0], [1, 1], [0, 1]]],
-	'square_1': [2, 2, [[1, 1], [1, 1]]],
-	'line_1': [4, 1, [[1, 1, 1, 1]]], 'line_2': [1, 4, [[1], [1], [1], [1]]],
+	'z_1': [0b110, 0b011, 0b000], 'z_2': [0b001, 0b011, 0b010], 'z_3': [0b000, 0b110, 0b011], 'z_4': [0b010, 0b110, 0b100],
+	'zr_1': [0b011, 0b110, 0b000], 'zr_2': [0b010, 0b011, 0b001], 'zr_3': [0b000, 0b011, 0b110], 'zr_4': [0b100, 0b110, 0b010],
+	'square_1': [0b11, 0b11],
+	'line_1': [0b0000, 0b1111, 0b0000, 0b0000], 'line_2': [0b0010, 0b0010, 0b0010, 0b0010], 'line_3': [0b0000, 0b0000, 0b1111, 0b0000], 'line_4': [0b0100, 0b0100, 0b0100, 0b0100],
 };
 
 const SHAPE_GROUP = {
@@ -27,9 +28,9 @@ const SHAPE_GROUP = {
 	'shape-leg': ['shape-leg_1', 'shape-leg_2', 'shape-leg_3', 'shape-leg_4'],
 	'shape-legr': ['shape-legr_1', 'shape-legr_2', 'shape-legr_3', 'shape-legr_4'],
 	'shape-z': ['shape-z_1', 'shape-z_2', 'shape-z_3', 'shape-z_4'],
-	'shape-zr': ['shape-zr_1', 'shape-zr_2'],
+	'shape-zr': ['shape-zr_1', 'shape-zr_2', 'shape-zr_3', 'shape-zr_4'],
 	'shape-square': ['shape-square_1'],
-	'shape-line': ['shape-line_1', 'shape-line_2'],
+	'shape-line': ['shape-line_1', 'shape-line_2', 'shape-line_3', 'shape-line_4'],
 };
 
 const DIRECTIONS = {
@@ -128,7 +129,7 @@ const shapes = {
 	},
 
 	initStatsElms() {
-		const list = [0, 4, 8, 12, 14, 16, 17];
+		const list = [0, 4, 8, 12, 16, 20, 21];
 
 		for (const idx of list) {
 			const groupName = this.getGroup(idx);
@@ -205,7 +206,7 @@ function rotateShape(elm) {
 }
 
 function createBoardShape() {
-	const idx = 8; // nextShapeIdx;
+	const idx = nextShapeIdx;
 
 	const elm = shapes.create(idx);
 	const { t, l } = elm.shapeData;
