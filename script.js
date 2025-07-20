@@ -198,7 +198,7 @@ const shapes = {
 		const idx = variants.indexOf(name);
 
 		const nextName = variants[(idx + 1) % variants.length];
-		const [w, h, dots] = shapes.getDots(nextName);
+		const [w, h] = shapes.getDots(nextName);
 
 		const isRotatoable = (() => {
 			if (validatePosition(nextName, t, l)) return true;
@@ -220,6 +220,8 @@ const shapes = {
 		})();
 
 		if (isRotatoable) {
+			if (t < 0) return;
+
 			elm.classList.remove(name);
 			elm.classList.add(nextName);
 
@@ -290,7 +292,13 @@ const board = {
 		const idx = shapes.nextShapeIdx;
 
 		const elm = shapes.create(idx);
-		const { t, l } = elm.shapeData;
+		let { name, t, l } = elm.shapeData;
+		const dots = shapes.getDots(name);
+
+		for (let i = 0; i < dots.length; i++) {
+			if (dots[i] !== 0) break;
+			t--;
+		}
 
 		shapes.setNextShape();
 		shapes.move(elm, t, l);
@@ -394,9 +402,6 @@ async function actionHandler() {
 		return;
 	}
 }
-function actionRotate() {
-	shapes.rotate();
-}
 
 const wait = (t) => new Promise((ok) => setTimeout(ok, t));
 
@@ -461,7 +466,7 @@ const engine = {
 		board.elm.removeChild(shapes.current.elm);
 		shapes.current = board.createNewShape();
 
-		this.delay(1000);
+		this.delay(500);
 	},
 };
 
@@ -487,7 +492,7 @@ document.addEventListener('keyup', (e) => {
 	const direction = DIRECTIONS[e.key];
 
 	if (direction === 'U') {
-		actionRotate();
+		shapes.rotate();
 	}
 });
 
