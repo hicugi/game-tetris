@@ -48,8 +48,11 @@ const DIRECTIONS = {
 };
 
 const shapes = {
+	nextShapeIdx: null,
+	currentShapeElm: null,
+
 	get current() {
-		const elm = currentShape;
+		const elm = this.currentShapeElm;
 		const { name, ...data } = elm.shapeData;
 
 		const dots = this.getDots(name);
@@ -63,7 +66,12 @@ const shapes = {
 			...data,
 		};
 	},
+	set current(elm) {
+		this.currentShapeElm = elm;
+	},
+
 	init() {
+		this.setNextShape();
 		this.initStatsElms();
 		this.initDotSizes();
 	},
@@ -93,6 +101,20 @@ const shapes = {
 		};
 
 		return elm;
+	},
+
+
+	setNextShape() {
+		const idx = Math.floor(Math.random() * SHAPE_LIST.length);
+		this.nextShapeIdx = idx;
+
+		const elm = document.querySelector('#nextShape');
+
+		for (const name of SHAPE_LIST) {
+			elm.classList.remove(name);
+		}
+
+		elm.classList.add(SHAPE_LIST[idx]);
 	},
 
 	/**
@@ -155,6 +177,61 @@ const shapes = {
 			document.querySelector(`.stats [name='icon-${groupName}`).appendChild(elm);
 		}
 	},
+
+	move(elm, t, l) {
+		const { w, h } = elm.shapeData;
+
+		const y = (t * SHAPE_SIZE).toFixed(4);
+		const x = (l * SHAPE_SIZE).toFixed(4);
+
+		elm.style.transform = `translate(${x}px, ${y}px)`;
+
+		Object.assign(elm.shapeData, { t, l });
+	},
+
+	rotate() {
+		let { l, t, name, elm } = this.current;
+
+		const variants = SHAPE_GROUP[name.substring(0, name.length - 2)];
+		if (variants.length < 2) return;
+
+		const idx = variants.indexOf(name);
+
+		const nextName = variants[(idx + 1) % variants.length];
+		const [w, h, dots] = shapes.getDots(nextName);
+
+		const isRotatoable = (() => {
+			if (validatePosition(nextName, t, l)) return true;
+
+			for (let i = 1; i <= 2; i++) {
+				if (validatePosition(nextName, t, l - i)) {
+					isLeftPosValid = true;
+					l -= i;
+					return true;
+				}
+				if (validatePosition(nextName, t, l + i)) {
+					isLeftPosValid = true;
+					l += i;
+					return true;
+				}
+			}
+
+			return false;
+		})();
+
+		if (isRotatoable) {
+			elm.classList.remove(name);
+			elm.classList.add(nextName);
+
+			Object.assign(elm.shapeData, {
+				name: nextName,
+				w, h,
+				t, l,
+			});
+
+			shapes.move(elm, t, l);
+		}
+	}
 };
 shapes.init();
 
@@ -170,6 +247,8 @@ const board = {
 			elm.style.top = `${i * SHAPE_SIZE}px`;
 			this.elm.appendChild(elm);
 		}
+
+		shapes.current = this.createNewShape();
 	},
 
 	clear() {
@@ -207,6 +286,21 @@ const board = {
 		}
 	},
 
+	createNewShape() {
+		const idx = shapes.nextShapeIdx;
+
+		const elm = shapes.create(idx);
+		const { t, l } = elm.shapeData;
+
+		shapes.setNextShape();
+		shapes.move(elm, t, l);
+
+		shapes.increaseStatValue(idx);
+
+		board.elm.appendChild(elm);
+		return elm;
+	},
+
 	drawCurrentShape() {
 		const { l, t, dots } = shapes.current;
 		const size = dots.length;
@@ -220,95 +314,28 @@ const board = {
 			}
 		}
 	},
+
+	reDraw() {
+		const size = SHAPE_SIZE;
+		const elms = [...this.elm.querySelectorAll('.board__item')];
+
+		for (let r = 0; r < elms.length; r++) {
+			const row = this.grid[r];
+			const elm = elms[r];
+			const pixels = [];
+
+			for (let c = 0; c < BOARD_WIDTH; c++) {
+				pixels.push(
+					(row & (1 << c) ? '#000' : 'transparent') +
+					` ${c * size}px ${(c + 1) * size}px`
+				);
+			}
+
+			elm.style.background = `linear-gradient(to right, ${pixels.join(',')})`;
+		}
+	},
 };
 board.init();
-
-let nextShapeIdx = null;
-
-function setNextShape() {
-	const idx = Math.floor(Math.random() * SHAPE_LIST.length);
-	nextShapeIdx = idx;
-
-	const elm = document.querySelector('#nextShape');
-
-	for (const name of SHAPE_LIST) {
-		elm.classList.remove(name);
-	}
-
-	elm.classList.add(SHAPE_LIST[idx]);
-}
-
-setNextShape();
-
-function elmMoveShape(elm, t, l) {
-	const { w, h } = elm.shapeData;
-
-	const y = (t * SHAPE_SIZE).toFixed(4);
-	const x = (l * SHAPE_SIZE).toFixed(4);
-
-	elm.style.transform = `translate(${x}px, ${y}px)`;
-
-	Object.assign(elm.shapeData, { t, l });
-}
-
-function rotateShape(elm) {
-	let { l, t, name } = elm.shapeData;
-
-	const variants = SHAPE_GROUP[name.substring(0, name.length - 2)];
-	if (variants.length < 2) return;
-
-	const idx = variants.indexOf(name);
-
-	const nextName = variants[(idx + 1) % variants.length];
-	const [w, h, dots] = shapes.getDots(nextName);
-
-	const isRotatoable = (() => {
-		if (validatePosition(nextName, t, l)) return true;
-
-		for (let i = 1; i <= 2; i++) {
-			if (validatePosition(nextName, t, l - i)) {
-				isLeftPosValid = true;
-				l -= i;
-				return true;
-			}
-			if (validatePosition(nextName, t, l + i)) {
-				isLeftPosValid = true;
-				l += i;
-				return true;
-			}
-		}
-
-		return false;
-	})();
-
-	if (isRotatoable) {
-		elm.classList.remove(name);
-		elm.classList.add(nextName);
-
-		Object.assign(elm.shapeData, {
-			name: nextName,
-			w, h,
-			t, l,
-		});
-
-		elmMoveShape(elm, t, l);
-	}
-}
-
-function createBoardShape() {
-	const idx = nextShapeIdx;
-
-	const elm = shapes.create(idx);
-	const { t, l } = elm.shapeData;
-
-	setNextShape();
-	elmMoveShape(elm, t, l);
-
-	shapes.increaseStatValue(idx);
-
-	board.elm.appendChild(elm);
-	return elm;
-}
 
 /**
  * @param {string} name - Shape name
@@ -339,28 +366,26 @@ function validatePosition(name, y, x) {
 	return true;
 }
 
-let currentShape = createBoardShape();
 let action = null;
 let prevLine = BOARD_HEIGHT;
 
 async function actionHandler() {
 	if (action === null) return;
 
-	const elm = currentShape;
-	const { name, t, l, w, h, dots } = elm.shapeData;
+	const { elm, name, t, l } = shapes.current;
 
 	if (action === 'L' && validatePosition(name, t, l - 1)) {
-		elmMoveShape(elm, t, l - 1);
+		shapes.move(elm, t, l - 1);
 		return;
 	}
 
 	if (action === 'R' && validatePosition(name, t, l + 1)) {
-		elmMoveShape(elm, t, l + 1);
+		shapes.move(elm, t, l + 1);
 		return;
 	}
 
 	if (action === 'D' && validatePosition(name, t + 1, l)) {
-		elmMoveShape(elm, t + 1, l);
+		shapes.move(elm, t + 1, l);
 		engine.loopTimer = 0;
 
 		if (!validatePosition(name, t + 2, l)) {
@@ -370,30 +395,7 @@ async function actionHandler() {
 	}
 }
 function actionRotate() {
-	const elm = currentShape;
-	const { t, l, w, h, dots } = elm.shapeData;
-
-	rotateShape(elm);
-}
-
-function reDrawBoard() {
-	const size = SHAPE_SIZE;
-	const elms = [...board.elm.querySelectorAll('.board__item')];
-
-	for (let r = 0; r < elms.length; r++) {
-		const row = board.grid[r];
-		const elm = elms[r];
-		const pixels = [];
-
-		for (let c = 0; c < BOARD_WIDTH; c++) {
-			pixels.push(
-				(row & (1 << c) ? '#000' : 'transparent') +
-				` ${c * size}px ${(c + 1) * size}px`
-			);
-		}
-
-		elm.style.background = `linear-gradient(to right, ${pixels.join(',')})`;
-	}
+	shapes.rotate();
 }
 
 const wait = (t) => new Promise((ok) => setTimeout(ok, t));
@@ -437,7 +439,7 @@ const engine = {
 
 		if (validatePosition(name, t + 1, l)) {
 			t += 1;
-			elmMoveShape(elm, t, l);
+			shapes.move(elm, t, l);
 
 			await wait(128);
 
@@ -455,9 +457,9 @@ const engine = {
 		board.drawCurrentShape();
 		board.clearRows();
 
-		reDrawBoard();
-		board.elm.removeChild(currentShape);
-		currentShape = createBoardShape();
+		board.reDraw();
+		board.elm.removeChild(shapes.current.elm);
+		shapes.current = board.createNewShape();
 
 		this.delay(1000);
 	},
