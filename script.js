@@ -46,6 +46,17 @@ const DIRECTIONS = {
 };
 
 const shapes = {
+	get current() {
+		const elm = currentShape;
+		const { name, ...data } = elm.shapeData;
+
+		return {
+			elm,
+			dots: this.getDots(name),
+			name,
+			...data,
+		};
+	},
 	init() {
 		this.initStatsElms();
 		this.initDotSizes();
@@ -143,16 +154,18 @@ shapes.init();
 
 const board = Array.from({ length: BOARD_SIZE[1] }, () => new Array(BOARD_SIZE[0]).fill(0));
 
+Object.assign(board, {
+	clear() {
+		for (let r = 0; r < board.length; r++) {
+			for (let c = 0; c < board[0].length; c++) {
+				board[r][c] = 0;
+			}
+		}
+	},
+});
+
 const elmBoard = document.querySelector('#board');
 let nextShapeIdx = null;
-
-function clearBoard() {
-	for (let r = 0; r < board.length; r++) {
-		for (let c = 0; c < board[0].length; c++) {
-			board[r][c] = 0;
-		}
-	}
-}
 
 function setNextShape() {
 	const idx = Math.floor(Math.random() * SHAPE_LIST.length);
@@ -292,7 +305,6 @@ function actionHandler() {
 		elmMoveShape(elm, t + 1, l);
 		return;
 	}
-
 }
 function actionRotate() {
 	const elm = currentShape;
@@ -322,72 +334,10 @@ function reDrawBoard() {
 	}
 }
 
-function moveShape() {
-	const elm = currentShape;
-	const { name, l, t } = elm.shapeData;
-
-	if (validatePosition(name, t + 1, l)) {
-		elmMoveShape(elm, t + 1, l);
-		return;
-	}
-
-	const dots = shapes.getDots(name);
-	const { w, h } = dots;
-
-	// paint new shape into board
-	const size = dots.length;
-	for (let i = 0; i < size; i++) {
-		const b = dots[i];
-
-		for (let j = 0; j < size; j++) {
-			if (b & (1 << j)) {
-				board[t + i][l + (size - 1 - j)] = 1;
-			}
-		}
-	}
-
-	// clear rows
-	(() => {
-		const rows = [];
-		const n = board[0].length;
-
-		for (let r = t; r < t + h; r++) {
-			const sum = board[r].reduce((r, v) => r + v);
-			if (sum !== n) continue;
-
-			rows.push(r);
-
-			for (let c = 0; c < n; c++) {
-				board[r][c] = 0;
-			}
-		}
-
-		const elmCurrScore = document.querySelector('#scoreCurrent')
-		elmCurrScore.innerText = Number(elmCurrScore.innerText) + rows.length * 10;
-
-		while (rows.length) {
-			const bot = rows.pop();
-
-			for (let r = bot; r > 0; r--) {
-				for (let c = 0; c < n; c++) {
-					board[r][c] = board[r - 1][c];
-				}
-			}
-
-			for (let i = 0; i < rows.length; i++) {
-				rows[i] += 1;
-			}
-		}
-	})();
-
-	reDrawBoard();
-	elmBoard.removeChild(currentShape);
-	currentShape = createBoardShape();
-}
-
 const engine = {
 	interval: null,
 	isPaused: false,
+	loopTimer: 0,
 
 	/**
 	* @param {number} time
@@ -397,32 +347,101 @@ const engine = {
 
 		setTimeout(() => {
 			this.isPaused = false;
+			this.loopTimer = 0;
 		}, time);
 	},
 
 	start() {
 		clearInterval(this.engineInterval);
 
-		let moveTime = 0;
-		let speed = GAME_SPEED;
-
 		this.engineInterval = setInterval(() => {
-			moveTime += INTERVAL;
+			this.loopTimer += INTERVAL;
 
 			if (this.isPaused) return;
 
 			actionHandler();
 
-			if (moveTime > speed) {
-				moveShape();
-				moveTime = 0;
+			if (this.loopTimer > GAME_SPEED) {
+				this.loop();
+				this.loopTimer = 0;
 			}
 		}, INTERVAL);
-	}
+	},
+
+	async loop() {
+		let { elm, name, l, t, dots } = shapes.current;
+
+		if (validatePosition(name, t + 1, l)) {
+			t += 1;
+			elmMoveShape(elm, t, l);
+
+			await new Promise((ok) => setTimeout(ok, 128));
+
+			if (validatePosition(name, shapes.current.t + 1, shapes.current.l)) {
+				return;
+			}
+		}
+
+		l = shapes.current.l;
+		t = shapes.current.t;
+		const { h } = dots;
+
+		// paint new shape into board
+		const size = dots.length;
+		for (let i = 0; i < size; i++) {
+			const b = dots[i];
+
+			for (let j = 0; j < size; j++) {
+				if (b & (1 << j)) {
+					board[t + i][l + (size - 1 - j)] = 1;
+				}
+			}
+		}
+
+		// clear rows
+		(() => {
+			const rows = [];
+			const n = board[0].length;
+
+			for (let r = t; r < t + h; r++) {
+				const sum = board[r].reduce((r, v) => r + v);
+				if (sum !== n) continue;
+
+				rows.push(r);
+
+				for (let c = 0; c < n; c++) {
+					board[r][c] = 0;
+				}
+			}
+
+			const elmCurrScore = document.querySelector('#scoreCurrent')
+			elmCurrScore.innerText = Number(elmCurrScore.innerText) + rows.length * 10;
+
+			while (rows.length) {
+				const bot = rows.pop();
+
+				for (let r = bot; r > 0; r--) {
+					for (let c = 0; c < n; c++) {
+						board[r][c] = board[r - 1][c];
+					}
+				}
+
+				for (let i = 0; i < rows.length; i++) {
+					rows[i] += 1;
+				}
+			}
+		})();
+
+		reDrawBoard();
+		elmBoard.removeChild(currentShape);
+		currentShape = createBoardShape();
+
+		this.delay(1000);
+	},
 };
 
 function startGame() {
-	clearBoard();
+	board.clear();
 	engine.start();
 }
 
