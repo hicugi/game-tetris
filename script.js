@@ -114,7 +114,10 @@ const shapes = {
 			elm.classList.remove(name);
 		}
 
-		elm.classList.add(SHAPE_LIST[idx]);
+		if (elm.childNodes.length != 0) {
+			elm.removeChild(elm.childNodes[0]);
+		}
+		elm.appendChild(shapes.create(idx));
 	},
 
 	/**
