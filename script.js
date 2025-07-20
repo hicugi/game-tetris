@@ -1,7 +1,9 @@
 const INTERVAL = 50;
 const GAME_SPEED = 1000;
 
-const BOARD_SIZE = [10, 20];
+const BOARD_WIDTH = 10;
+const BOARD_HEIGHT = 20;
+
 const SHAPE_SIZE = 32;
 const SHAPE_LIST = [
 	'shape-f_1', 'shape-f_2', 'shape-f_3', 'shape-f_4',
@@ -50,10 +52,14 @@ const shapes = {
 		const elm = currentShape;
 		const { name, ...data } = elm.shapeData;
 
+		const dots = this.getDots(name);
+
 		return {
 			elm,
-			dots: this.getDots(name),
+			dots,
 			name,
+			w: dots.w,
+			h: dots.h,
 			...data,
 		};
 	},
@@ -78,7 +84,7 @@ const shapes = {
 			return elm;
 		}
 
-		const l = BOARD_SIZE[0] / 2 - Math.floor(this.getDots(name).w / 2);
+		const l = BOARD_WIDTH / 2 - Math.floor(this.getDots(name).w / 2);
 		const t = 0;
 
 		elm.shapeData = {
@@ -152,19 +158,71 @@ const shapes = {
 };
 shapes.init();
 
-const board = Array.from({ length: BOARD_SIZE[1] }, () => new Array(BOARD_SIZE[0]).fill(0));
+const board = {
+	elm: document.querySelector('#board'),
+	grid: new Array(BOARD_HEIGHT).fill(0),
+	filledRow: parseInt("1".repeat(BOARD_WIDTH), 2),
 
-Object.assign(board, {
+	init() {
+		for (let i = 0; i < this.grid.length; i++) {
+			const elm = document.createElement('DIV');
+			elm.classList.add('board__item');
+			elm.style.top = `${i * SHAPE_SIZE}px`;
+			this.elm.appendChild(elm);
+		}
+	},
+
 	clear() {
-		for (let r = 0; r < board.length; r++) {
-			for (let c = 0; c < board[0].length; c++) {
-				board[r][c] = 0;
+		for (let r = 0; r < this.grid.length; r++) {
+			this.grid[r] = 0b0;
+		}
+	},
+
+	clearRows() {
+		const { grid } = this;
+		const { t, dots } = shapes.current;
+
+		const rows = [];
+
+		for (let r = t; r < grid.length; r++) {
+			if (grid[r] !== this.filledRow) continue;
+
+			rows.push(r);
+			grid[r] = 0;
+		}
+
+		const elmCurrScore = document.querySelector('#scoreCurrent')
+		elmCurrScore.innerText = Number(elmCurrScore.innerText) + rows.length * 10;
+
+		while (rows.length) {
+			const bot = rows.pop();
+
+			for (let r = bot; r > 0; r--) {
+				grid[r] = grid[r - 1];
+			}
+
+			for (let i = 0; i < rows.length; i++) {
+				rows[i] += 1;
 			}
 		}
 	},
-});
 
-const elmBoard = document.querySelector('#board');
+	drawCurrentShape() {
+		const { l, t, dots } = shapes.current;
+		const size = dots.length;
+
+		for (let r = 0; r < size; r++) {
+			const b = dots[r];
+
+			for (let j = 0; j < size; j++) {
+				if (!(b & (1 << j))) continue;
+				this.grid[r + t] ^= 1 << l + (size - 1 - j);
+			}
+		}
+	},
+};
+board.init();
+
 let nextShapeIdx = null;
 
 function setNextShape() {
@@ -248,7 +306,7 @@ function createBoardShape() {
 
 	shapes.increaseStatValue(idx);
 
-	elmBoard.appendChild(elm);
+	board.elm.appendChild(elm);
 	return elm;
 }
 
@@ -261,8 +319,8 @@ function validatePosition(name, y, x) {
 	const dots = shapes.getDots(name);
 	let { l, w, h } = dots;
 
-	if (h + y > BOARD_SIZE[1]) return false;
-	if (x + l < 0 || w + x > BOARD_SIZE[0]) return false;
+	if (h + y > BOARD_HEIGHT) return false;
+	if (x + l < 0 || w + x > BOARD_WIDTH) return false;
 
 	const size = dots.length;
 	for (let i = 0; i < size; i++) {
@@ -272,7 +330,7 @@ function validatePosition(name, y, x) {
 		for (let j = 0; j < size; j++) {
 			if (!(b & (1 << (size - 1 - j)))) continue;
 
-			if (board[y + i] === undefined || board[y + i][x + j] === 1) {
+			if (y + i >= board.grid.length || board.grid[y + i] & 1 << (x + j)) {
 				return false;
 			}
 		}
@@ -283,9 +341,9 @@ function validatePosition(name, y, x) {
 
 let currentShape = createBoardShape();
 let action = null;
-let prevLine = BOARD_SIZE[1];
+let prevLine = BOARD_HEIGHT;
 
-function actionHandler() {
+async function actionHandler() {
 	if (action === null) return;
 
 	const elm = currentShape;
@@ -303,6 +361,11 @@ function actionHandler() {
 
 	if (action === 'D' && validatePosition(name, t + 1, l)) {
 		elmMoveShape(elm, t + 1, l);
+		engine.loopTimer = 0;
+
+		if (!validatePosition(name, t + 2, l)) {
+			engine.actionOnDrop();
+		}
 		return;
 	}
 }
@@ -313,26 +376,27 @@ function actionRotate() {
 	rotateShape(elm);
 }
 
-(function drawBoard() {
-	for (let i = 0; i < board.length; i++) {
-		const elm = document.createElement('DIV');
-		elm.classList.add('board__item');
-		elm.style.top = `${i * SHAPE_SIZE}px`;
-		elmBoard.appendChild(elm);
-	}
-})();
-
 function reDrawBoard() {
 	const size = SHAPE_SIZE;
-	const elms = [...elmBoard.querySelectorAll('.board__item')];
+	const elms = [...board.elm.querySelectorAll('.board__item')];
 
-	for (let r = 0; r < board.length; r++) {
+	for (let r = 0; r < elms.length; r++) {
+		const row = board.grid[r];
 		const elm = elms[r];
+		const pixels = [];
 
-		const value = board[r].map((v, i) => (v === 1 ? '#000' : 'transparent') + ` ${i * size}px ${(i + 1) * size}px`).join(', ');
-		elm.style.background = `linear-gradient(to right, ${value})`;
+		for (let c = 0; c < BOARD_WIDTH; c++) {
+			pixels.push(
+				(row & (1 << c) ? '#000' : 'transparent') +
+				` ${c * size}px ${(c + 1) * size}px`
+			);
+		}
+
+		elm.style.background = `linear-gradient(to right, ${pixels.join(',')})`;
 	}
 }
+
+const wait = (t) => new Promise((ok) => setTimeout(ok, t));
 
 const engine = {
 	interval: null,
@@ -375,65 +439,24 @@ const engine = {
 			t += 1;
 			elmMoveShape(elm, t, l);
 
-			await new Promise((ok) => setTimeout(ok, 128));
+			await wait(128);
 
 			if (validatePosition(name, shapes.current.t + 1, shapes.current.l)) {
 				return;
 			}
 		}
 
-		l = shapes.current.l;
-		t = shapes.current.t;
-		const { h } = dots;
+		this.actionOnDrop();
+	},
 
-		// paint new shape into board
-		const size = dots.length;
-		for (let i = 0; i < size; i++) {
-			const b = dots[i];
+	async actionOnDrop() {
+		await wait(0);
 
-			for (let j = 0; j < size; j++) {
-				if (b & (1 << j)) {
-					board[t + i][l + (size - 1 - j)] = 1;
-				}
-			}
-		}
-
-		// clear rows
-		(() => {
-			const rows = [];
-			const n = board[0].length;
-
-			for (let r = t; r < t + h; r++) {
-				const sum = board[r].reduce((r, v) => r + v);
-				if (sum !== n) continue;
-
-				rows.push(r);
-
-				for (let c = 0; c < n; c++) {
-					board[r][c] = 0;
-				}
-			}
-
-			const elmCurrScore = document.querySelector('#scoreCurrent')
-			elmCurrScore.innerText = Number(elmCurrScore.innerText) + rows.length * 10;
-
-			while (rows.length) {
-				const bot = rows.pop();
-
-				for (let r = bot; r > 0; r--) {
-					for (let c = 0; c < n; c++) {
-						board[r][c] = board[r - 1][c];
-					}
-				}
-
-				for (let i = 0; i < rows.length; i++) {
-					rows[i] += 1;
-				}
-			}
-		})();
+		board.drawCurrentShape();
+		board.clearRows();
 
 		reDrawBoard();
-		elmBoard.removeChild(currentShape);
+		board.elm.removeChild(currentShape);
 		currentShape = createBoardShape();
 
 		this.delay(1000);
