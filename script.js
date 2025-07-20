@@ -16,7 +16,7 @@ const SHAPE_LIST = [
 const SHAPE_DOTS = {
 	'f_1': [0b010, 0b111, 0b000], 'f_2': [0b010, 0b011, 0b010], 'f_3': [0b000, 0b111, 0b010], 'f_4': [0b010, 0b110, 0b010],
 	'leg_1': [0b111, 0b100, 0b000], 'leg_2': [0b011, 0b001, 0b001], 'leg_3': [0b000, 0b001, 0b111], 'leg_4': [0b100, 0b100, 0b110],
-	'legr_1': [0b111, 0b001, 0b000], 'legr_2': [0b001, 0b001, 0b011], 'legr_3': [0b011, 0b001, 0b001], 'legr_4': [0b110, 0b100, 0b100],
+	'legr_1': [0b111, 0b001, 0b000], 'legr_2': [0b001, 0b001, 0b011], 'legr_3': [0b000, 0b100, 0b111], 'legr_4': [0b110, 0b100, 0b100],
 	'z_1': [0b110, 0b011, 0b000], 'z_2': [0b001, 0b011, 0b010], 'z_3': [0b000, 0b110, 0b011], 'z_4': [0b010, 0b110, 0b100],
 	'zr_1': [0b011, 0b110, 0b000], 'zr_2': [0b010, 0b011, 0b001], 'zr_3': [0b000, 0b011, 0b110], 'zr_4': [0b100, 0b110, 0b010],
 	'square_1': [0b11, 0b11],
@@ -191,7 +191,26 @@ function rotateShape(elm) {
 	const nextName = variants[(idx + 1) % variants.length];
 	const [w, h, dots] = shapes.getDots(nextName);
 
-	if (validatePosition(nextName, t, l)) {
+	const isRotatoable = (() => {
+		if (validatePosition(nextName, t, l)) return true;
+
+		for (let i = 1; i <= 2; i++) {
+			if (validatePosition(nextName, t, l - i)) {
+				isLeftPosValid = true;
+				l -= i;
+				return true;
+			}
+			if (validatePosition(nextName, t, l + i)) {
+				isLeftPosValid = true;
+				l += i;
+				return true;
+			}
+		}
+
+		return false;
+	})();
+
+	if (isRotatoable) {
 		elm.classList.remove(name);
 		elm.classList.add(nextName);
 
