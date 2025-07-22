@@ -476,6 +476,8 @@ const engine = {
 function startGame() {
 	board.clear();
 	engine.start();
+
+	ui.hideStartGameDialog();
 }
 
 document.addEventListener('keydown', (e) => {
@@ -499,5 +501,60 @@ document.addEventListener('keyup', (e) => {
 	}
 });
 
-startGame();
+const ui = {
+	startGameDialog: null,
+
+	/**
+	 * @param {string} text
+	 * @param {function} event
+	 */
+	createBtn(text, event) {
+		const btn = document.createElement('BUTTON');
+
+		btn.innerText = text;
+
+		const span = document.createElement('SPAN');
+		btn.appendChild(span);
+
+		btn.className = 'btn';
+		btn.addEventListener('click', event);
+
+		return btn;
+	},
+
+	openDialog(id, content) {
+		const dialog = document.querySelector('#dialogTemplate').content.cloneNode(true);
+		dialog.id = id;
+
+		dialog.querySelector('[dialog-body]').appendChild(content);
+
+		return dialog.querySelector('.dialog');
+	},
+	hideDialog(value) {
+		const elm = typeof value !== 'string' ? value : document.querySelector(`#${value}`);
+		elm.classList.add('dialog--hide');
+	},
+
+	initStartGameDialog() {
+		const body = document.createElement('DIV');
+
+		const title = document.createElement('H2');
+		title.className = 'startGame__title';
+		title.innerText = 'TETRIS';
+		const btn = ui.createBtn('START', startGame);
+
+		body.appendChild(title);
+		body.appendChild(btn);
+		const dialog = ui.openDialog('startGameDialog', body);
+
+		document.body.appendChild(dialog);
+
+		ui.startGameDialog = dialog;
+	},
+	hideStartGameDialog() {
+		this.hideDialog(this.startGameDialog);
+	},
+};
+
+ui.initStartGameDialog();
 

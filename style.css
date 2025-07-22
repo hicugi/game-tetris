@@ -315,3 +315,130 @@ h3 {
 	width: 100%;
 	height: var(--shape-size);
 }
+
+.dialog {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: #000000f2;
+}
+.dialog--hide {
+	display: none;
+}
+.dialog-container {
+	margin: 0 auto;
+	padding: 80px 30px;
+	border: 2px solid #9ce3f7;
+	border-radius: 10px;
+	width: 100%;
+	max-width: 600px;
+	background-color: #0a112df2;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.startGame__title {
+	margin-bottom: 80px;
+	height: 42px;
+	background: url('title.svg') no-repeat center;
+	background-size: contain;
+	font-size: 0px;
+}
+
+.btn {
+	--color: #50f4fa;
+	position: relative;
+	padding: 10px 55px;
+	border: none;
+	font-size: 42px;
+	line-height: 1.2em;
+	letter-spacing: 4px;
+	background: none;
+	color: #fff;
+	font-weight: bold;
+	box-sizing: border-box;
+	transition: 0.5s;
+	overflow: hidden;
+	-webkit-box-reflect: below 1px linear-gradient(transparent, #0005);
+}
+.btn:hover {
+	background: var(--color);
+	color: #050801;
+	box-shadow: 0 0 5px var(--color),
+	      0 0 25px var(--color),
+	      0 0 50px var(--color),
+	      0 0 200px var(--color);
+}
+
+.btn::before,
+.btn::after, 
+.btn span::before,
+.btn span::after {
+	position: absolute;
+	display: block;
+	content: '';
+}
+
+/* top */
+.btn::before {
+	top: 0;
+	left: -100%;
+	width: 100%;
+	height: 2px;
+	background: linear-gradient(90deg, transparent, var(--color));
+	animation: btnAnimateTop 1s linear infinite;
+}
+@keyframes btnAnimateTop {
+  0% { left: -100%; }
+  50%, 100% { left: 100%; }
+}
+
+/* bot */
+.btn::after {
+	bottom: 0; right: -100%;
+	width: 100%;
+	height: 2px;
+	background: linear-gradient(270deg, transparent, #03e9f4);
+	animation: btnAnimateBot 1s linear infinite;
+	animation-delay: 0.5s;
+}
+@keyframes btnAnimateBot {
+  0% { right: -100%; }
+  50%, 100% { right: 100%; }
+}
+
+.btn span::before {
+	bottom: -100%;
+	left: 0;
+	width: 2px;
+	height: 100%;
+	background: linear-gradient(0deg, transparent, #03e9f4);
+	animation: btnAnimateLeft 1s linear infinite;
+	animation-delay: 0.75s;
+}
+@keyframes btnAnimateLeft {
+	0% { bottom: -100%; }
+	50%, 100% { bottom: 100%; }
+}
+
+.btn span::after {
+	top: -100%;
+	right: 0;
+	width: 2px;
+	height: 100%;
+	background: linear-gradient(180deg, transparent, var(--color));
+	animation: btnAnimateRight 1s linear infinite;
+	animation-delay: 0.25s;
+}
+@keyframes btnAnimateRight {
+	0% { top: -100%; }
+	50%, 100% { top: 100%; }
+}
+
