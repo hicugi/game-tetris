@@ -303,6 +303,11 @@ const board = {
 			t--;
 		}
 
+		if (!validatePosition(name, t, l)) {
+			endGame();
+			return elm;
+		}
+
 		shapes.setNextShape();
 		shapes.move(elm, t, l);
 
@@ -426,6 +431,7 @@ const engine = {
 	},
 
 	start() {
+		this.isPaused = false;
 		clearInterval(this.engineInterval);
 
 		this.engineInterval = setInterval(() => {
@@ -440,6 +446,11 @@ const engine = {
 				this.loopTimer = 0;
 			}
 		}, INTERVAL);
+	},
+	stop() {
+		clearInterval(this.engineInterval);
+		this.loopTimer = 0;
+		this.isPaused = true;
 	},
 
 	async loop() {
@@ -479,6 +490,26 @@ function startGame() {
 
 	ui.hideStartGameDialog();
 }
+function reStartGame() {
+	board.clear();
+	board.reDraw();
+
+	shapes.current = board.createNewShape();
+	engine.start();
+
+	ui.hideEndGameDialog();
+}
+function endGame() {
+	engine.stop();
+
+	const current = document.querySelector('#scoreCurrent');
+	const newValue = current.innerText;
+	current.innerText = '0';
+	const elm = document.querySelector('#scoreTop');
+	elm.innerText = Math.max(elm.innerText, newValue);
+
+	ui.showEndGameDialog();
+}
 
 document.addEventListener('keydown', (e) => {
 	const direction = DIRECTIONS[e.key];
@@ -503,6 +534,7 @@ document.addEventListener('keyup', (e) => {
 
 const ui = {
 	startGameDialog: null,
+	endGameDialog: null,
 
 	/**
 	 * @param {string} text
@@ -522,7 +554,7 @@ const ui = {
 		return btn;
 	},
 
-	openDialog(id, content) {
+	createDialog(id, content) {
 		const dialog = document.querySelector('#dialogTemplate').content.cloneNode(true);
 		dialog.id = id;
 
@@ -530,9 +562,14 @@ const ui = {
 
 		return dialog.querySelector('.dialog');
 	},
+	getDialog(value) {
+		return typeof value !== 'string' ? value : document.querySelector(`#${value}`);
+	},
+	openDialog(value) {
+		this.getDialog(value).classList.remove('dialog--hide');
+	},
 	hideDialog(value) {
-		const elm = typeof value !== 'string' ? value : document.querySelector(`#${value}`);
-		elm.classList.add('dialog--hide');
+		this.getDialog(value).classList.add('dialog--hide');
 	},
 
 	initStartGameDialog() {
@@ -545,14 +582,47 @@ const ui = {
 
 		body.appendChild(title);
 		body.appendChild(btn);
-		const dialog = ui.openDialog('startGameDialog', body);
+		const dialog = ui.createDialog('startGameDialog', body);
 
 		document.body.appendChild(dialog);
 
 		ui.startGameDialog = dialog;
+
+		setTimeout(() => {
+			btn.focus();
+		});
 	},
 	hideStartGameDialog() {
 		this.hideDialog(this.startGameDialog);
+	},
+
+	showEndGameDialog() {
+		if (this.endGameDialog) {
+			this.openDialog(this.endGameDialog);
+			return;
+		}
+
+		const body = document.createElement('DIV');
+
+		const title = document.createElement('H2');
+		title.className = 'endGame__title';
+		title.innerText = 'GAME OVER';
+		const btn = ui.createBtn('RESTART', reStartGame);
+
+		body.appendChild(title);
+		body.appendChild(btn);
+		const dialog = ui.createDialog('endGameDialog', body);
+
+		document.body.appendChild(dialog);
+
+		ui.endGameDialog = dialog;
+
+		setTimeout(() => {
+			btn.focus();
+		});
+	},
+	hideEndGameDialog() {
+		this.hideDialog(this.endGameDialog);
 	},
 };
 

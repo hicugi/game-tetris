@@ -368,6 +368,12 @@ h3 {
 	background-size: contain;
 	font-size: 0px;
 }
+.endGame__title {
+	margin-bottom: 40px;
+	height: 42px;
+	font-size: 32px;
+	color: var(--color-primary);
+}
 
 .btn {
 	--color: var(--color-primary);
@@ -381,8 +387,9 @@ h3 {
 	color: #f1f1f1;
 	font-weight: bold;
 	box-sizing: border-box;
-	transition: 0.5s;
+	outline: none;
 	overflow: hidden;
+	transition: 0.5s;
 	-webkit-box-reflect: below 1px linear-gradient(transparent, #0005);
 }
 .btn:hover {
