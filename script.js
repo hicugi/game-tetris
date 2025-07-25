@@ -337,7 +337,7 @@ const board = {
 
 			for (let c = 0; c < BOARD_WIDTH; c++) {
 				pixels.push(
-					(row & (1 << c) ? '#000' : 'transparent') +
+					(row & (1 << c) ? 'var(--color-shape)' : 'transparent') +
 					` ${c * size}px ${(c + 1) * size}px`
 				);
 			}

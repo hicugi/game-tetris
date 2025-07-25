@@ -1,6 +1,9 @@
 body {
+	--color-primary: #50f4fa;
+	--color-border: #9ce3f7;
+	--color-text: #ffffff;
+	--color-shape: var(--color-text);
 	--shape-size: 32px;
-	--shape-f-color: #000;
 	--content-width: calc(var(--shape-size) * 10);
 	--content-height: calc(var(--shape-size) * 20);
 	--sidebar-width: 320px;
@@ -8,6 +11,19 @@ body {
 	margin: 0;
 	padding: 0;
 	font-family: sans-serif;
+	background: url('assets/bg-800.jpg') no-repeat center top;
+	background-size: cover;
+	color: var(--color-text);
+}
+@media screen and (min-width: 800px) {
+	body {
+		background-image: url('assets/bg-1400.jpg');
+	}
+}
+@media screen and (min-width: 1400px) {
+	body {
+		background-image: url('assets/bg.jpg');
+	}
 }
 
 h1, h2, h3 {
@@ -35,7 +51,8 @@ h3 {
 
 .block {
 	padding: 8px 10px 6px;
-	border: 2px solid #dcdcdc;
+	border: 2px solid var(--color-border);
+	background-color: #00000080;
 }
 .block + .block {
 	margin-top: 20px;
@@ -78,7 +95,7 @@ h3 {
 	--transition-delay: 0.1s;
 	position: absolute;
 	display: block;
-	color: var(--shape-f-color);
+	color: var(--color-shape);
 	transition: ease-out var(--transition-delay);
 }
 .shape div {
@@ -264,7 +281,7 @@ h3 {
 }
 .next-shape__icon {
 	position: relative;
-	height: calc(var(--shape-size) * 3);
+	height: calc(var(--shape-size) * 4);
 }
 .next-shape__icon > * {
 	position: absolute;
@@ -325,7 +342,7 @@ h3 {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	background: #000000f2;
+	background: #000000d2;
 }
 .dialog--hide {
 	display: none;
@@ -333,11 +350,11 @@ h3 {
 .dialog-container {
 	margin: 0 auto;
 	padding: 80px 30px;
-	border: 2px solid #9ce3f7;
+	border: 2px solid var(--color-border);
 	border-radius: 10px;
 	width: 100%;
 	max-width: 600px;
-	background-color: #0a112df2;
+	background-color: #0a112dc0;
 	box-sizing: border-box;
 	display: flex;
 	flex-direction: column;
@@ -347,13 +364,13 @@ h3 {
 .startGame__title {
 	margin-bottom: 80px;
 	height: 42px;
-	background: url('title.svg') no-repeat center;
+	background: url('assets/title.svg') no-repeat center;
 	background-size: contain;
 	font-size: 0px;
 }
 
 .btn {
-	--color: #50f4fa;
+	--color: var(--color-primary);
 	position: relative;
 	padding: 10px 55px;
 	border: none;
@@ -361,7 +378,7 @@ h3 {
 	line-height: 1.2em;
 	letter-spacing: 4px;
 	background: none;
-	color: #fff;
+	color: #f1f1f1;
 	font-weight: bold;
 	box-sizing: border-box;
 	transition: 0.5s;
@@ -370,7 +387,7 @@ h3 {
 }
 .btn:hover {
 	background: var(--color);
-	color: #050801;
+	color: #fff;
 	box-shadow: 0 0 5px var(--color),
 	      0 0 25px var(--color),
 	      0 0 50px var(--color),
